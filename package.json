@@ -2,17 +2,20 @@
   "name": "ex-site-eletn",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/main.js",
+  "main": "./out/src/main/main.js",
   "type": "module",
   "scripts": {
-    "build":"tsc",
+    "build": "tsc && node build-esbuild.js",
+    "build:es": "node build-esbuild.js",
     "start": "npm run build && electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf ./out"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^37.2.0"
+    "electron": "^37.2.0",
+    "esbuild": "^0.25.10"
   },
   "dependencies": {
     "typescript": "^5.8.3"
