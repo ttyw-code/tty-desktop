@@ -1,5 +1,6 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, screen } from 'electron';
 import { icpMain } from '@/ipc-demo/demo.js';
+import * as path from 'path';
 
 
 class Main {
@@ -24,18 +25,20 @@ const createWindow = () => {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
-    titleBarStyle: 'hidden',
-    // ...(process.platform !== 'darwin' ? { titleBarOverlay: true } : {})
   });
 
-  win.loadFile('src/renderer/index.html');
+  // win.loadFile('src/renderer/index.html');
+  win.loadURL('https://www.google.com');
 };
+
+
 
 app.whenReady().then(() => {
   init();
   app.on('activate', () => {
     if (!_isExistWindow()) {
       createWindow();
+
     }
   });
 });

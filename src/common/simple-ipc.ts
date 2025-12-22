@@ -1,6 +1,5 @@
 import { VSBuffer } from '../base/vsbuffer';
 import { Emitter } from '../base/event';
-import { DisposableStore, toDisposable } from '../base/lifecycle';
 
 export interface IMessagePassingProtocol {
     send(buffer: VSBuffer): void;
@@ -18,7 +17,7 @@ export class InMemoryProtocol implements IMessagePassingProtocol {
         setTimeout(() => this.other?.onMessageEmitter.fire(buffer), 0);
     }
 
-    onMessage(listener: (b: VSBuffer) => void) { const fn = this.onMessageEmitter.event(listener); return { dispose: fn }; }
+    onMessage(listener: (b: VSBuffer) => void) { const fn = this.onMessageEmitter.event(listener); return { dispose: () => fn.dispose() }; }
 }
 
 // Minimal ChannelServer/Client demo
@@ -47,7 +46,7 @@ export class ChannelServer {
 
 export class ChannelClient {
     private nextId = 1;
-    private pending = new Map<number, (v:any)=>void>();
+    private pending = new Map<number, (v: any) => void>();
     constructor(private protocol: IMessagePassingProtocol) {
         this.protocol.onMessage((b) => this.onMessage(b));
     }
