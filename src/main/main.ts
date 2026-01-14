@@ -1,11 +1,11 @@
 import { app, BrowserWindow, screen } from 'electron';
 import { icpMain } from '@/ipc-demo/demo.js';
-import * as path from 'path';
+import { longestCommonSubsequence } from '@/common/linkedList.js';
 
 
 class Main {
 
-  main(): void {
+  start(): void {
     try {
       this.startup();
 
@@ -37,8 +37,8 @@ app.whenReady().then(() => {
   init();
   app.on('activate', () => {
     if (!_isExistWindow()) {
+      appMain.start();
       createWindow();
-
     }
   });
 });
@@ -50,6 +50,9 @@ function _isExistWindow(): boolean {
 }
 
 function init(): void {
+
+  const lcs = longestCommonSubsequence(['a', 'b', 'c','d'], ['a', 'c', 'd']);
+  console.log('Longest Common Subsequence:', lcs);
   createWindow();
   icpMain();
 }
@@ -58,4 +61,4 @@ function init(): void {
 // Entry point 
 // Create Main instance and start the application
 const appMain = new Main();
-appMain.main();
+appMain.start();
