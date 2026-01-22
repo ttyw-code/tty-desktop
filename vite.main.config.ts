@@ -13,12 +13,15 @@ export default defineConfig({
     sourcemap: true,
     target: 'node18',
     lib: {
-      entry: path.resolve(__dirname, 'src/main/main.ts'),
-      formats: ['es'],
-      fileName: () => 'main.js',
+      entry: {
+        main: path.resolve(__dirname, 'src/main/main.ts'),
+        preload: path.resolve(__dirname, 'src/main/preload.ts'),
+      },
+      formats: ['cjs'],
+      fileName: (_format, entryName) => `${entryName}.cjs`,
     },
     rollupOptions: {
-      external: ['electron', 'electron/main'],
+      external: ['electron', 'electron/main', 'node:path', 'node:fs'],
     },
   },
 });

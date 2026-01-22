@@ -1,8 +1,8 @@
 {
-  "name": "ex-site-eletn",
+  "name": "tty-gomoku",
   "version": "1.0.0",
   "description": "",
-  "main": "./out/src/main/main.js",
+  "main": "./out/src/main/main.cjs",
   "type": "module",
   "scripts": {
     "build:main": "vite build --config vite.main.config.ts",
@@ -11,6 +11,9 @@
     "start": "npm run build && electron .",
     "dev:renderer": "vite",
     "dev": "concurrently -k \"cross-env NODE_NO_WARNINGS=1 vite --logLevel error\" \"wait-on http://localhost:5175 && cross-env NODE_NO_WARNINGS=1 VITE_DEV_SERVER_URL=http://localhost:5175 electron .\"",
+    "pack:win": "npm run build && electron-builder --win",
+    "pack:nsis": "npm run build && electron-builder --win nsis",
+    "pack:msi": "npm run build && electron-builder --win msi",
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf ./out"
   },
@@ -27,6 +30,7 @@
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
     "electron": "^37.2.0",
+    "electron-builder": "^26.4.0",
     "lucide-react": "^0.562.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
@@ -46,5 +50,43 @@
       "electron",
       "esbuild"
     ]
+  },
+  "build": {
+    "appId": "com.tty.gomoku",
+    "productName": "TTY Gomoku",
+    "asar": true,
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "out/src/main/main.cjs"
+    },
+    "win": {
+      "icon": "build/icons/ttygomoku.ico",
+      "target": [
+        "nsis",
+        "msi"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "TTY Gomoku",
+      "installerIcon": "build/icons/ttygomoku-installer.ico",
+      "uninstallerIcon": "build/icons/ttygomoku-installer.ico",
+      "uninstallDisplayName": "TTY Gomoku"
+    },
+    "msi": {
+      "perMachine": false
+    }
   }
 }

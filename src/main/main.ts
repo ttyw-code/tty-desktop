@@ -1,4 +1,6 @@
-import { app, BrowserWindow, screen, Menu } from 'electron';
+import { app, BrowserWindow, screen, Menu, ipcMain } from 'electron';
+import path from 'node:path';
+import fs from 'node:fs';
 import { icpMain } from '@/ipc-demo/demo.js';
 import { longestCommonSubsequence } from '@/common/linkedList.js';
 
@@ -23,14 +25,23 @@ class Main {
 
 const createWindow = () => {
   Menu.setApplicationMenu(null);
+  const appRoot = app.isPackaged ? app.getAppPath() : process.cwd();
+  const preloadCandidates = [
+    path.join(appRoot, 'out/src/main/preload.cjs'),
+  ];
+  const preloadPath = preloadCandidates.find((candidate) => fs.existsSync(candidate));
+  if (!preloadPath) {
+    console.warn('Preload file not found. Tried:', preloadCandidates);
+  }
   const win = new BrowserWindow({
     width: 1000,
     height: 800,
     // fullscreen: true,
     frame: false,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      preload: preloadPath,
+      nodeIntegration: false,
+      contextIsolation: true,
     },
   });
 
@@ -45,6 +56,9 @@ const createWindow = () => {
 
 
 app.whenReady().then(() => {
+  ipcMain.handle('app:quit', () => {
+    app.quit();
+  });
   init();
   app.on('activate', () => {
     if (!_isExistWindow()) {
