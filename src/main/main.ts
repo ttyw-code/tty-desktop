@@ -22,18 +22,24 @@ class Main {
 
 
 const createWindow = () => {
-  // Menu.setApplicationMenu(null);
+  Menu.setApplicationMenu(null);
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    // frame: false,
+    width: 1000,
+    height: 800,
+    // fullscreen: true,
+    frame: false,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
     },
   });
 
-  win.loadFile('src/renderer/index.html');
+  const devServerUrl = process.env.VITE_DEV_SERVER_URL;
+  if (devServerUrl) {
+    win.loadURL(devServerUrl);
+  } else {
+    win.loadFile('out/renderer/index.html');
+  }
 };
 
 
