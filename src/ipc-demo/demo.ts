@@ -1,3 +1,4 @@
+// import { createDecorator } from '@/platform/instantiation/common/instantiation/instantiation';
 import { InMemoryProtocol, ChannelServer, ChannelClient } from '../common/simple-ipc';
 
 export async function icpMain() {
@@ -14,3 +15,16 @@ export async function icpMain() {
     // const ch = client.getChannel('math');
 }
 
+
+// export const IIpcMainService = createDecorator<IIpcMainService>('ipcMainService');
+
+export interface IIpcMainService {
+    icpMain(): Promise<void>;
+}
+
+
+export class IpcMainService implements IIpcMainService {
+    async icpMain(): Promise<void> {
+        // Implementation of icpMain
+    }
+}

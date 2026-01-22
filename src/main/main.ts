@@ -1,4 +1,4 @@
-import { app, BrowserWindow, screen } from 'electron';
+import { app, BrowserWindow, screen, Menu } from 'electron';
 import { icpMain } from '@/ipc-demo/demo.js';
 import { longestCommonSubsequence } from '@/common/linkedList.js';
 
@@ -22,13 +22,18 @@ class Main {
 
 
 const createWindow = () => {
+  // Menu.setApplicationMenu(null);
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    // frame: false,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
   });
 
-  // win.loadFile('src/renderer/index.html');
-  win.loadURL('https://www.google.com');
+  win.loadFile('src/renderer/index.html');
 };
 
 

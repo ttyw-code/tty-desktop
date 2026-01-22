@@ -5,10 +5,11 @@
 import { build } from 'esbuild';
 import path from 'path';
 import fs from 'fs';
+import postcss from 'esbuild-postcss';
 
 const projectRoot = process.cwd();
 
-// Helper plugin to resolve `src/...` imports to the source folder
+// Helper plugin to resolve `src/...` imports to the source files
 const aliasPlugin = {
   name: 'alias-src',
   setup(build) {
@@ -43,6 +44,10 @@ const aliasPlugin = {
     const outDir = path.join(projectRoot, 'out', 'src');
     fs.mkdirSync(outDir, { recursive: true });
 
+    // Ensure renderer out dir exists
+    const rendererOutDir = path.join(projectRoot, 'out', 'renderer');
+    fs.mkdirSync(rendererOutDir, { recursive: true });
+
     await build({
       entryPoints: ['src/main/main.ts'],
       bundle: true,
@@ -53,6 +58,19 @@ const aliasPlugin = {
       plugins: [aliasPlugin],
       tsconfig: 'tsconfig.json',
       external: ['electron', 'electron/main'],
+      logLevel: 'info'
+    });
+
+    // Build Renderer Process
+    await build({
+      entryPoints: ['src/renderer/src/main.tsx'],
+      bundle: true,
+      outfile: 'out/renderer/main.js',
+      platform: 'browser',
+      format: 'esm',
+      sourcemap: true,
+      plugins: [aliasPlugin, postcss()],
+      tsconfig: 'tsconfig.json',
       logLevel: 'info'
     });
 
