@@ -2,7 +2,6 @@ import { app, BrowserWindow, screen, Menu, ipcMain } from 'electron';
 import path from 'node:path';
 import fs from 'node:fs';
 import { icpMain } from '@/ipc-demo/demo.js';
-import { longestCommonSubsequence } from '@/common/linkedList.js';
 
 
 class Main {
@@ -25,21 +24,14 @@ class Main {
 
 const createWindow = () => {
   Menu.setApplicationMenu(null);
-  const appRoot = app.isPackaged ? app.getAppPath() : process.cwd();
-  const preloadCandidates = [
-    path.join(appRoot, 'out/src/main/preload.cjs'),
-  ];
-  const preloadPath = preloadCandidates.find((candidate) => fs.existsSync(candidate));
-  if (!preloadPath) {
-    console.warn('Preload file not found. Tried:', preloadCandidates);
-  }
+
   const win = new BrowserWindow({
     width: 1000,
     height: 800,
     // fullscreen: true,
     frame: false,
     webPreferences: {
-      preload: preloadPath,
+      preload: getPreloadPath()!,
       nodeIntegration: false,
       contextIsolation: true,
     },
@@ -56,10 +48,9 @@ const createWindow = () => {
 
 
 app.whenReady().then(() => {
-  ipcMain.handle('app:quit', () => {
-    app.quit();
-  });
+  
   init();
+  registerIpcHandlers();
   app.on('activate', () => {
     if (!_isExistWindow()) {
       appMain.start();
@@ -67,6 +58,15 @@ app.whenReady().then(() => {
     }
   });
 });
+
+function registerIpcHandlers(): void {
+  // Add IPC handlers here
+
+  // 退出应用
+  ipcMain.handle('app:quit', () => {
+    app.quit();
+  });
+}
 
 
 function _isExistWindow(): boolean {
@@ -76,10 +76,21 @@ function _isExistWindow(): boolean {
 
 function init(): void {
 
-  const lcs = longestCommonSubsequence(['a', 'b', 'c','d'], ['a', 'c', 'd']);
-  console.log('Longest Common Subsequence:', lcs);
   createWindow();
   icpMain();
+}
+
+
+function getPreloadPath(): string | null {
+  const appRoot = app.isPackaged ? app.getAppPath() : process.cwd();
+  const preloadCandidates = [
+    path.join(appRoot, 'out/src/main/preload.cjs'),
+  ];
+  const preloadPath = preloadCandidates.find((candidate) => fs.existsSync(candidate));
+  if (!preloadPath) {
+    console.warn('Preload file not found. Tried:', preloadCandidates);
+  }
+  return preloadPath || null;
 }
 
 

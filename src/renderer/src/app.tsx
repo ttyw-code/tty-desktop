@@ -34,8 +34,8 @@ const App: React.FC = () => {
         {
             !showGame && (
                 <div className="flex flex-col gap-4">
-                    <Button variant="shadow" startContent={<Play />} onPress={clickStart}>开始</Button>
-                    <Button variant="shadow" color="danger" onPress={clickExit}>退出</Button>
+                    <Button variant="shadow" color="primary" startContent={<Play />} onPress={clickStart}>开始</Button>
+                    <Button variant="shadow" color="default" onPress={clickExit}>退出</Button>
                 </div>
             )
         }
