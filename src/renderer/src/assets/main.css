@@ -23,3 +23,21 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+.drag-region {
+    -webkit-app-region: drag;
+}
+
+.no-drag {
+    -webkit-app-region: no-drag;
+}
+
+.drag-region button,
+.drag-region [role='button'],
+.drag-region a,
+.drag-region input,
+.drag-region textarea,
+.drag-region select,
+.drag-region .no-drag {
+    -webkit-app-region: no-drag;
+}

@@ -1,53 +1,212 @@
 import React from "react";
 
-import { useState, useEffect } from "react";
-import { Play, Undo2, } from 'lucide-react';
+import { useState } from "react";
+import {
+    Play,
+    Undo2,
+    ListChecks,
+    FileText,
+    Settings,
+    Timer,
+    CalendarCheck,
+    Search,
+    BookOpenText,
+    Calculator,
+} from "lucide-react";
 
 import { Button } from "@heroui/react";
 import GomokuGame from "./gomoku";
+import TodoList from "./todoList";
+
+type AppId =
+    | "gomoku"
+    | "todo"
+    | "markdown"
+    | "settings"
+    | "pomodoro"
+    | "agenda"
+    | "search"
+    | "journal"
+    | "calculator";
 
 const App: React.FC = () => {
-
-
-    const [state, setState] = useState(0);
-    const [showGame, setShowGame] = useState(false);
-
-    function clickStart() {
-        //开始gomoku游戏
-        setShowGame(true);
-    }
-
-    function clickBack() {
-        setShowGame(false);
-    }
+    const [activeApp, setActiveApp] = useState<AppId | null>(null);
 
     function clickExit() {
         if (window.appBridge?.quit) {
             window.appBridge.quit();
         } else {
-            console.warn('appBridge not available, quit skipped');
+            console.warn("appBridge not available, quit skipped");
         }
     }
 
-    return <div className="h-full w-full overflow-hidden p-6 ">
-
+    const apps: Array<{
+        id: AppId;
+        title: string;
+        description: string;
+        icon: React.ReactNode;
+        available: boolean;
+        cta: string;
+    }> = [
         {
-            !showGame && (
-                <div className="flex flex-col gap-4">
-                    <Button variant="shadow" color="primary" startContent={<Play />} onPress={clickStart}>开始</Button>
-                    <Button variant="shadow" color="default" onPress={clickExit}>退出</Button>
-                </div>
-            )
-        }
-        {showGame && (
-            <div className="mt-4 flex h-full flex-col space-y-4 overflow-hidden">
-                <Button variant="shadow" startContent={<Undo2 />} onPress={clickBack}>返回</Button>
-                <div className="flex-1 min-h-0">
-                    <GomokuGame />
-                </div>
+            id: "gomoku",
+            title: "五子棋",
+            description: "单机对战，随时来一局。",
+            icon: <Play />,
+            available: true,
+            cta: "开始游戏",
+        },
+        {
+            id: "pomodoro",
+            title: "倒计时/番茄钟",
+            description: "专注与提醒，提升效率。",
+            icon: <Timer />,
+            available: false,
+            cta: "即将上线",
+        },
+        {
+            id: "agenda",
+            title: "日程 + 待办",
+            description: "统一管理今日计划。",
+            icon: <CalendarCheck />,
+            available: false,
+            cta: "即将上线",
+        },
+        {
+            id: "search",
+            title: "本地文件搜索",
+            description: "快速定位常用文件。",
+            icon: <Search />,
+            available: false,
+            cta: "即将上线",
+        },
+        {
+            id: "journal",
+            title: "简易日记",
+            description: "每日记录与回顾。",
+            icon: <BookOpenText />,
+            available: false,
+            cta: "即将上线",
+        },
+        {
+            id: "calculator",
+            title: "计算器/换算",
+            description: "常用计算与单位换算。",
+            icon: <Calculator />,
+            available: false,
+            cta: "即将上线",
+        },
+        {
+            id: "todo",
+            title: "待办清单",
+            description: "快速记录与提醒。",
+            icon: <ListChecks />,
+            available: true,
+            cta: "打开",
+        },
+        {
+            id: "markdown",
+            title: "Markdown 笔记",
+            description: "轻量笔记与预览。",
+            icon: <FileText />,
+            available: false,
+            cta: "即将上线",
+        },
+        {
+            id: "settings",
+            title: "设置",
+            description: "个性化体验与偏好。",
+            icon: <Settings />,
+            available: false,
+            cta: "即将上线",
+        },
+    ];
+
+    return (
+        <div className="drag-region flex h-full w-full flex-col overflow-hidden">
+            <div className="flex-1 overflow-hidden p-6">
+                {!activeApp && (
+                    <div className="flex h-full flex-col gap-6">
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                        <div className="space-y-1">
+                            <h1 className="text-2xl font-semibold">应用中心</h1>
+                            <p className="text-sm text-default-500">
+                                选择一个子应用开始使用。
+                            </p>
+                        </div>
+                        <Button variant="shadow" color="default" onPress={clickExit}>
+                            退出
+                        </Button>
+                    </div>
+
+                    <div className="grid flex-1 auto-rows-fr grid-cols-4 grid-rows-4 gap-4">
+                        {apps.map(app => (
+                            <div
+                                key={app.id}
+                                className="flex h-full flex-col justify-between rounded-2xl border border-default-200 bg-content1 p-5 shadow-sm"
+                            >
+                                <div className="space-y-3">
+                                    <div className="flex items-center gap-2 text-default-600">
+                                        <span className="text-xl">{app.icon}</span>
+                                        <span className="text-base font-medium">{app.title}</span>
+                                    </div>
+                                    <p className="text-sm text-default-500">{app.description}</p>
+                                </div>
+                                <Button
+                                    className="mt-5"
+                                    variant={app.available ? "shadow" : "flat"}
+                                    color={app.available ? "primary" : "default"}
+                                    isDisabled={!app.available}
+                                    onPress={() => setActiveApp(app.id)}
+                                >
+                                    {app.cta}
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+                    </div>
+                )}
+
+                {activeApp === "gomoku" && (
+                    <div className="mt-2 flex h-full flex-col space-y-4 overflow-hidden">
+                        <div className="flex items-center justify-between">
+                            <Button
+                                className="no-drag"
+                                variant="shadow"
+                                startContent={<Undo2 />}
+                                onPress={() => setActiveApp(null)}
+                            >
+                                返回
+                            </Button>
+                            <div className="text-sm text-default-500">五子棋</div>
+                        </div>
+                        <div className="flex-1 h-full min-h-0 overflow-hidden rounded-2xl border border-default-200">
+                            <GomokuGame />
+                        </div>
+                    </div>
+                )}
+
+                {activeApp === "todo" && (
+                    <div className="mt-2 flex h-full flex-col space-y-4 overflow-hidden">
+                        <div className="flex items-center justify-between">
+                            <Button
+                                className="no-drag"
+                                variant="shadow"
+                                startContent={<Undo2 />}
+                                onPress={() => setActiveApp(null)}
+                            >
+                                返回
+                            </Button>
+                            <div className="text-sm text-default-500">待办清单</div>
+                        </div>
+                        <div className="flex-1 h-full min-h-0 overflow-hidden rounded-2xl border border-default-200">
+                            <TodoList />
+                        </div>
+                    </div>
+                )}
             </div>
-        )}
-    </div>;
-}
+        </div>
+    );
+};
 
 export default App;

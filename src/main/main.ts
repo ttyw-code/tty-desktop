@@ -23,13 +23,14 @@ class Main {
 
 
 const createWindow = () => {
-  Menu.setApplicationMenu(null);
+  // Menu.setApplicationMenu(null);
 
   const win = new BrowserWindow({
     width: 1000,
     height: 800,
     // fullscreen: true,
-    frame: false,
+    // frame: false,
+    resizable: false,
     webPreferences: {
       preload: getPreloadPath()!,
       nodeIntegration: false,
@@ -65,6 +66,20 @@ function registerIpcHandlers(): void {
   // 退出应用
   ipcMain.handle('app:quit', () => {
     app.quit();
+  });
+
+  ipcMain.handle('app:window:minimize', () => {
+    const focused = BrowserWindow.getFocusedWindow();
+    if (focused) {
+      focused.minimize();
+    }
+  });
+
+  ipcMain.handle('app:window:close', () => {
+    const focused = BrowserWindow.getFocusedWindow();
+    if (focused) {
+      focused.close();
+    }
   });
 }
 
