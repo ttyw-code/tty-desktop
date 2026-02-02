@@ -8,15 +8,18 @@ import {
     FileText,
     Settings,
     Timer,
-    CalendarCheck,
     Search,
     BookOpenText,
     Calculator,
+    TableOfContents
 } from "lucide-react";
 
 import { Button } from "@heroui/react";
 import GomokuGame from "./gomoku";
 import TodoList from "./todoList";
+import Pomodoro from "./pomodoro";
+import BasePage from "./basic-page";
+
 
 type AppId =
     | "gomoku"
@@ -24,10 +27,11 @@ type AppId =
     | "markdown"
     | "settings"
     | "pomodoro"
-    | "agenda"
+    | "basicPage"
     | "search"
     | "journal"
     | "calculator";
+
 
 const App: React.FC = () => {
     const [activeApp, setActiveApp] = useState<AppId | null>(null);
@@ -61,16 +65,16 @@ const App: React.FC = () => {
             title: "倒计时/番茄钟",
             description: "专注与提醒，提升效率。",
             icon: <Timer />,
-            available: false,
-            cta: "即将上线",
+            available: true,
+            cta: "打开",
         },
         {
-            id: "agenda",
-            title: "日程 + 待办",
-            description: "统一管理今日计划。",
-            icon: <CalendarCheck />,
-            available: false,
-            cta: "即将上线",
+            id: "basicPage",
+            title: "基础",
+            description: "基础页面。",
+            icon: <TableOfContents />,
+            available: true,
+            cta: "打开",
         },
         {
             id: "search",
@@ -124,9 +128,9 @@ const App: React.FC = () => {
 
     return (
         <div className="drag-region flex h-full w-full flex-col overflow-hidden">
-            <div className="flex-1 overflow-hidden p-6">
+            <div className={`flex-1 overflow-hidden ${activeApp ? "p-0" : "p-6"}`}>
                 {!activeApp && (
-                    <div className="flex h-full flex-col gap-6">
+                    <div className="flex w-full h-full flex-col gap-6">
                     <div className="flex flex-wrap items-center justify-between gap-4">
                         <div className="space-y-1">
                             <h1 className="text-2xl font-semibold">应用中心</h1>
@@ -201,6 +205,49 @@ const App: React.FC = () => {
                         </div>
                         <div className="flex-1 h-full min-h-0 overflow-hidden rounded-2xl border border-default-200">
                             <TodoList />
+                        </div>
+                    </div>
+                )}
+
+                {activeApp === "pomodoro" && (
+                    <div className="mt-2 flex h-full flex-col space-y-4 overflow-hidden">
+                        <div className="flex items-center justify-between">
+                            <Button
+                                className="no-drag"
+                                variant="shadow"
+                                startContent={<Undo2 />}
+                                onPress={() => setActiveApp(null)}
+                            >
+                                返回
+                            </Button>
+                            <div className="text-sm text-default-500">倒计时 / 番茄钟</div>
+                        </div>
+                        <div className="flex-1 h-full min-h-0 overflow-hidden rounded-2xl border border-default-200">
+                            <Pomodoro />
+                        </div>
+                    </div>
+                )}
+
+                {activeApp === "basicPage" && (
+                    <div className="mt-2 flex w-full h-full flex-col space-y-4 overflow-hidden">
+                        <div className="flex items-center justify-between">
+                            <Button
+                                className="no-drag"
+                                variant="shadow"
+                                startContent={<Undo2 />}
+                                onPress={() => setActiveApp(null)}
+                            >
+                                返回
+                            </Button>
+                            <div className="text-sm text-default-500">基础页面</div>
+                        </div>
+                        <div className="flex-1 h-full min-h-0 overflow-hidden rounded-2xl border border-default-200">
+                            <BasePage
+                                title="基础页面"
+                                header={<Button size="sm" variant="flat" className="app-nodrag">示例按钮</Button>}
+                            >
+                                <div className="p-6 text-default-600">这里是基础页面内容区域。</div>
+                            </BasePage>
                         </div>
                     </div>
                 )}
