@@ -10,6 +10,12 @@ html, body, #root {
     overflow: hidden;
 }
 
+[data-overlay-container='true'] {
+    padding: 10px;
+    height: 100%;
+    width: 100%;
+}
+
 body {
     margin: 0;
 }

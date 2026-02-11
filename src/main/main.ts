@@ -1,8 +1,50 @@
 import { app, BrowserWindow, screen, Menu, ipcMain } from 'electron';
-import path from 'node:path';
-import fs from 'node:fs';
+import path from 'path';
+import fs from 'fs';
 import { icpMain } from '@/ipc-demo/demo.js';
+import { EventEmitter } from 'events';
+import dns from 'dns';
+import { getLevelDbWorker, type LevelDbWorkerClient } from './db-worker/level-db-worker';
 
+
+
+
+let levelDbWorker: LevelDbWorkerClient | null = null;
+
+dns.lookup('www.baidu.com', (err, address, family) => {
+  if (err) {
+    console.error('DNS lookup failed:', err);
+  }
+  else {
+    console.log(`Address: ${address}, Family: IPv${family}`);
+  }
+});
+class MyEmitter extends EventEmitter {
+
+  constructor() {
+    super();
+  }
+
+  private _counter = 0;
+
+  increment() {
+    this._counter++;
+    this.emit('incremented', this._counter);
+  }
+
+  get counter() {
+    return this._counter;
+  }
+}
+
+
+const myEmitter = new MyEmitter();
+
+setInterval(() => { myEmitter.increment(); }, 5000);
+
+
+console.log(myEmitter.getMaxListeners()); // 获取当前事件的最大监听器数量
+console.log(myEmitter.eventNames()); // 获取当前注册的事件名称列表
 
 class Main {
 
@@ -49,7 +91,7 @@ const createWindow = () => {
 
 
 app.whenReady().then(() => {
-  
+
   init();
   registerIpcHandlers();
   app.on('activate', () => {
@@ -90,7 +132,14 @@ function _isExistWindow(): boolean {
 }
 
 function init(): void {
-
+  levelDbWorker = getLevelDbWorker();
+  const dbPath = path.join(app.getPath('userData'), 'mydb');
+  fs.mkdirSync(dbPath, { recursive: true });
+  levelDbWorker?.init(dbPath).then(() => {
+    console.log('LevelDB worker initialized');
+  }).catch((error) => {
+    console.error('Failed to initialize LevelDB worker:', error);
+  });
   createWindow();
   icpMain();
 }
@@ -107,7 +156,6 @@ function getPreloadPath(): string | null {
   }
   return preloadPath || null;
 }
-
 
 // Entry point 
 // Create Main instance and start the application

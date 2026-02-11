@@ -63,7 +63,7 @@ const TodoList: React.FC = () => {
     ];
 
     return (
-        <div className="h-full w-full overflow-auto bg-default-50 p-6 font-sans">
+        <div className="h-full w-full overflow-auto p-6 font-sans">
             <div className="w-full">
                 {/* Header */}
                 <header className="mb-8 text-center">

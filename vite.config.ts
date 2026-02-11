@@ -1,15 +1,22 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import inspect from 'vite-plugin-inspect';
 import path from 'path';
 
 export default defineConfig({
   root: path.resolve(__dirname, 'src/renderer'),
   base: './',
-  plugins: [react()],
+  plugins: [react(), inspect()],
   logLevel: 'error',
   server: {
     host: '0.0.0.0',
     port: 5175,
+    hmr: {
+      host: 'localhost',
+    },
+    watch: {
+        usePolling: true,
+    }
   },
   resolve: {
     alias: {

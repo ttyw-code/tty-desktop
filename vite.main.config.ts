@@ -16,12 +16,25 @@ export default defineConfig({
       entry: {
         main: path.resolve(__dirname, 'src/main/main.ts'),
         preload: path.resolve(__dirname, 'src/main/preload.ts'),
+        worker: path.resolve(__dirname, 'src/main/db-worker/leveldb.ts'),
       },
       formats: ['cjs'],
       fileName: (_format, entryName) => `${entryName}.cjs`,
     },
     rollupOptions: {
-      external: ['electron', 'electron/main', 'node:path', 'node:fs'],
+      external: [
+        'electron',
+        'electron/main',
+        'path',
+        'fs',
+        'events',
+        'dns',
+        'worker_threads',
+        'classic-level',
+        'node-gyp-build',
+        'module-error',
+        'abstract-level',
+      ],
     },
   },
 });

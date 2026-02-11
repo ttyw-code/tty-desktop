@@ -1,7 +1,3 @@
-export function link() {
-    console.log("this is a link function!")
-}
-
 /*---------------------------------------------------------------------------------------------*/
 
 export function longestCommonSubsequence(a: string[], b: string[]): string {

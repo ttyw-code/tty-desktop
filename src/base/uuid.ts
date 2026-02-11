@@ -18,7 +18,6 @@ export const generateUuid = (function (): () => string {
         _hex.push(i.toString(16).padStart(2, '0'));
     }
 
-    console.log(" invoking..................")
     return function generateUuid(): string {
        // get data
 		crypto.getRandomValues(_data);

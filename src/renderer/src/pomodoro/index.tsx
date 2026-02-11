@@ -69,7 +69,7 @@ const Pomodoro: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full w-full items-center justify-center bg-default-50 p-6">
+    <div className="flex h-full w-full items-center justify-center p-6">
       <Card className="w-full max-w-2xl border border-default-200 shadow-sm">
         <CardBody className="gap-6">
           <div className="flex flex-wrap items-center justify-between gap-3">

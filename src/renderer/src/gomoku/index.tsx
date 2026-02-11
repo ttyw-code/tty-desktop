@@ -259,7 +259,7 @@ const GomokuGame = () => {
     };
 
     return (
-        <div className="relative flex h-full w-full min-h-0 flex-col items-center justify-start bg-stone-100 p-4 font-sans text-stone-800 overflow-hidden">
+        <div className="relative flex h-full w-full min-h-0 flex-col items-center justify-start p-4 font-sans text-stone-800 overflow-hidden">
 
             <div className="absolute right-4 top-4 text-right text-xs font-bold text-stone-700">
                 <div className="flex flex-col gap-1">

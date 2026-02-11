@@ -7,7 +7,7 @@ export function createCancelablePromise<T>(factory: (token: { isCancellationRequ
     const listeners: (() => void)[] = [];
     const token = {
         get isCancellationRequested() { return cancelled; },
-        onCancellationRequested(cb: () => void) { listeners.push(cb); return { dispose: () => { const i = listeners.indexOf(cb); if (i >= 0) listeners.splice(i,1); } } }
+        onCancellationRequested(cb: () => void) { listeners.push(cb); return { dispose: () => { const i = listeners.indexOf(cb); if (i >= 0) listeners.splice(i, 1); } } }
     };
 
     const p = factory(token).finally(() => { /* noop */ });
@@ -16,4 +16,14 @@ export function createCancelablePromise<T>(factory: (token: { isCancellationRequ
     });
 }
 
-export default createCancelablePromise;
+export function simpleCancelablePromise<T>(promise: Promise<T>): Promise<T> & { cancel(): void } {
+    let cancel: () => void;
+    const wrappedPromise = new Promise<T>((resolve, reject) => {
+        cancel = () => reject(new Error('Promise was cancelled'));
+        promise.then(resolve, reject);
+    }) as Promise<T> & { cancel(): void };
+
+    wrappedPromise.cancel = cancel!;
+    return wrappedPromise;
+}
+
