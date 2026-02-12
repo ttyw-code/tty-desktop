@@ -23,6 +23,12 @@ jobs:
           node-version: 23
           cache: npm
 
+      - name: Use public npm registry
+        run: |
+          npm config set registry https://registry.npmjs.org/
+          npm config delete //registry.npmjs.org/:_authToken || true
+          npm config delete //registry.npmjs.org/:_auth || true
+
 
       - name: Install dependencies
         run: npm install
