@@ -76,6 +76,12 @@
         "msi"
       ]
     },
+    "mac": {
+      "icon": "build/icons/ttygomoku.icns"
+    },
+    "linux": {
+      "icon": "build/icons/ttygomoku.png"
+    },
     "nsis": {
       "oneClick": false,
       "perMachine": false,
