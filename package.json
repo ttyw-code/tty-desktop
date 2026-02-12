@@ -8,7 +8,6 @@
     "build:main": "vite build --config vite.main.config.ts",
     "build:renderer": "vite build",
     "build": "npm run build:main && npm run build:renderer",
-    "postinstall": "electron-builder install-app-deps",
     "start": "npm run build && electron .",
     "dev:renderer": "vite",
     "dev": "concurrently -k \"cross-env NODE_NO_WARNINGS=1 vite --logLevel error\" \"wait-on http://localhost:5175 && cross-env NODE_NO_WARNINGS=1 VITE_DEV_SERVER_URL=http://localhost:5175 electron .\"",
@@ -42,9 +41,8 @@
   },
   "dependencies": {
     "@heroui/react": "^2.8.7",
-    "classic-level": "^2.0.0",
     "framer-motion": "^12.27.5",
-    "level": "^9.0.0",
+    "lowdb": "^7.0.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "typescript": "^5.8.3"

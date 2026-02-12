@@ -1,5 +1,8 @@
+import fs from 'fs';
+import path from 'path';
 import { parentPort } from 'worker_threads';
-import { ClassicLevel } from 'classic-level';
+import { Low } from 'lowdb';
+import { JSONFile } from 'lowdb/node';
 
 type WorkerMessage =
   | { type: 'init'; payload: { path: string }; requestId?: string }
@@ -13,7 +16,11 @@ type WorkerResponse =
   | { type: 'result'; requestId?: string; payload?: unknown }
   | { type: 'error'; requestId?: string; error: string };
 
-let db: ClassicLevel<string, string> | null = null;
+type DbData = {
+  records: Record<string, string>;
+};
+
+let db: Low<DbData> | null = null;
 
 function postMessage(message: WorkerResponse): void {
   if (parentPort) {
@@ -21,10 +28,22 @@ function postMessage(message: WorkerResponse): void {
   }
 }
 
-async function ensureDbOpen(path: string): Promise<void> {
+function resolveDbFile(dbPath: string): string {
+  if (dbPath.endsWith('.json')) {
+    return dbPath;
+  }
+  return path.join(dbPath, 'db.json');
+}
+
+async function ensureDbOpen(dbPath: string): Promise<void> {
   if (db) return;
-  db = new ClassicLevel<string, string>(path, { valueEncoding: 'utf8' });
-  await db.open();
+  const filePath = resolveDbFile(dbPath);
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  const adapter = new JSONFile<DbData>(filePath);
+  db = new Low(adapter, { records: {} });
+  await db.read();
+  db.data ||= { records: {} };
+  await db.write();
 }
 
 async function handleMessage(message: WorkerMessage): Promise<void> {
@@ -40,33 +59,26 @@ async function handleMessage(message: WorkerMessage): Promise<void> {
         return;
       case 'put':
         if (!db) throw new Error('DB not initialized');
-        await db.put(message.payload.key, message.payload.value);
+        db.data.records[message.payload.key] = message.payload.value;
+        await db.write();
         postMessage({ type: 'result', requestId: message.requestId });
         return;
       case 'get':
         if (!db) throw new Error('DB not initialized');
-        try {
-          const value = await db.get(message.payload.key);
-          postMessage({ type: 'result', requestId: message.requestId, payload: value });
-        } catch (error) {
-          const err = error as { code?: string; message?: string };
-          if (err.code === 'LEVEL_NOT_FOUND') {
-            postMessage({ type: 'result', requestId: message.requestId, payload: null });
-            return;
-          }
-          throw error;
-        }
+        postMessage({
+          type: 'result',
+          requestId: message.requestId,
+          payload: db.data.records[message.payload.key] ?? null,
+        });
         return;
       case 'del':
         if (!db) throw new Error('DB not initialized');
-        await db.del(message.payload.key);
+        delete db.data.records[message.payload.key];
+        await db.write();
         postMessage({ type: 'result', requestId: message.requestId });
         return;
       case 'close':
-        if (db) {
-          await db.close();
-          db = null;
-        }
+        db = null;
         postMessage({ type: 'result', requestId: message.requestId });
         return;
       default:
