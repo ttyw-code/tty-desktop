@@ -22,26 +22,15 @@ jobs:
         with:
           node-version: 23
           cache: npm
-          registry-url: https://registry.npmjs.org/
-          always-auth: true
-
-      - name: Verify npm token
-        run: node -e "if(!process.env.NODE_AUTH_TOKEN){console.error('NPM token missing');process.exit(1)}"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Install dependencies
         run: npm install
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Build renderer/main
         run: npm run build
 
       - name: Install electron-builder
         run: npm install -D electron-builder
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Package app
         run: npx electron-builder --publish=never
