@@ -29,6 +29,11 @@ jobs:
           npm config delete //registry.npmjs.org/:_authToken || true
           npm config delete //registry.npmjs.org/:_auth || true
 
+      - name: Remove npm auth files
+        run: |
+          rm -f ~/.npmrc
+          rm -f .npmrc
+
 
       - name: Install dependencies
         run: npm install
