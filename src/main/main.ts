@@ -5,6 +5,7 @@ import { icpMain } from '@/ipc-demo/demo.js';
 import { EventEmitter } from 'events';
 import dns from 'dns';
 import { getLevelDbWorker, type LevelDbWorkerClient } from './db-worker/level-db-worker';
+import { generateUuid } from '@/base/uuid';
 
 
 
@@ -132,6 +133,8 @@ function _isExistWindow(): boolean {
 }
 
 function init(): void {
+  const uuid = generateUuid();
+  console.log('Generated UUID:', uuid); 
   levelDbWorker = getLevelDbWorker();
   const dbPath = path.join(app.getPath('userData'), 'mydb');
   fs.mkdirSync(dbPath, { recursive: true });

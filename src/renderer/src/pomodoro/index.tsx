@@ -69,9 +69,9 @@ const Pomodoro: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full w-full items-center justify-center p-6">
+    <div className="flex h-full w-full items-start justify-center p-6">
       <Card className="w-full max-w-2xl border border-default-200 shadow-sm">
-        <CardBody className="gap-6">
+        <CardBody className="gap-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2 text-default-600">
               <Timer className="h-5 w-5" />
