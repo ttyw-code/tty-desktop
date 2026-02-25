@@ -112,3 +112,13 @@ if (parentPort) {
     void handleMessage(message);
   });
 }
+
+async function sendMessage(params: unknown): Promise<void> {
+  const reqId = Date.now().toString() + Math.random().toString(16).slice(2);
+  let URL = '';
+  const msg = await fetch(URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  console.log('sendMessage', params, msg);
+}

@@ -40,3 +40,16 @@ export class VSBuffer {
 }
 
 export default VSBuffer;
+
+
+export function createPriceFilter<T>(min: number, max: number): T[] {
+    const products = [
+        { id: 1, name: 'Laptop', price: 1200 },
+        { id: 2, name: 'Mouse', price: 25 },
+        { id: 3, name: 'Keyboard', price: 75 },
+        { id: 4, name: 'Monitor', price: 300 },
+        { id: 5, name: 'Webcam', price: 60 }
+    ];
+
+    return products.filter(product => product.price >= min && product.price <= max) as unknown as T[];
+} 
