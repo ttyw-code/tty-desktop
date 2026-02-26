@@ -23,7 +23,7 @@ type PendingRequest = {
   timer: NodeJS.Timeout;
 };
 
-export class LevelDbWorkerClient {
+export class LowDbWorkerClient {
   private worker: Worker;
   private pending = new Map<string, PendingRequest>();
   private requestCounter = 0;
@@ -109,13 +109,14 @@ export class LevelDbWorkerClient {
   }
 }
 
-export function createLevelDbWorker(workerPath: string | null): LevelDbWorkerClient | null {
+export function createLowDbWorker(workerPath: string | null): LowDbWorkerClient | null {
   if (!workerPath) {
     return null;
   }
 
+  console.log("workerPath:", workerPath)
   const worker = new Worker(workerPath);
-  return new LevelDbWorkerClient(worker);
+  return new LowDbWorkerClient(worker);
 }
 
 function getWorkerPath(): string | null {
@@ -130,11 +131,11 @@ function getWorkerPath(): string | null {
   return workerPath || null;
 }
 
-let levelDbWorker: LevelDbWorkerClient | null = null;
+let lowDbWorker: LowDbWorkerClient | null = null;
 
-export function getLevelDbWorker(): LevelDbWorkerClient | null {
-  if (!levelDbWorker) {
-    levelDbWorker = createLevelDbWorker(getWorkerPath());
+export function getLowDbWorker(): LowDbWorkerClient | null {
+  if (!lowDbWorker) {
+    lowDbWorker = createLowDbWorker(getWorkerPath());
   }
-  return levelDbWorker;
+  return lowDbWorker;
 }

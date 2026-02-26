@@ -4,13 +4,13 @@ import fs from 'fs';
 import { icpMain } from '@/ipc-demo/demo.js';
 import { EventEmitter } from 'events';
 import dns from 'dns';
-import { getLevelDbWorker, type LevelDbWorkerClient } from './db-worker/level-db-worker';
+import { getLowDbWorker, type LowDbWorkerClient } from './db-worker/lowdb-client';
 import { generateUuid } from '@/base/uuid';
 
 
 
 
-let levelDbWorker: LevelDbWorkerClient | null = null;
+let lowDbWorker: LowDbWorkerClient | null = null;
 
 dns.lookup('www.baidu.com', (err, address, family) => {
   if (err) {
@@ -132,17 +132,21 @@ function _isExistWindow(): boolean {
   return allWindows.length > 0;
 }
 
-function init(): void {
+async function init(): Promise<void> {
   const uuid = generateUuid();
   console.log('Generated UUID:', uuid); 
-  levelDbWorker = getLevelDbWorker();
+  lowDbWorker = getLowDbWorker();
   const dbPath = path.join(app.getPath('userData'), 'mydb');
   fs.mkdirSync(dbPath, { recursive: true });
-  levelDbWorker?.init(dbPath).then(() => {
-    console.log('LevelDB worker initialized');
-  }).catch((error) => {
-    console.error('Failed to initialize LevelDB worker:', error);
-  });
+  try {
+    await lowDbWorker?.init(dbPath);
+    console.log('LowDB worker initialized');
+    await lowDbWorker?.put('firstKey', 'Hello, LowDB!');
+    const value = await lowDbWorker?.get('firstKey');
+    console.log('Value from LowDB:', value);
+  } catch (error) {
+    console.error('Failed to initialize LowDB worker:', error);
+  }
   createWindow();
   icpMain();
 }
