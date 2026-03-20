@@ -32,3 +32,7 @@ export function longestCommonSubsequence(a: string[], b: string[]): string {
 
     return lcs.reverse().join('');
 }
+
+export function isInteger(input: unknown): boolean {
+    return typeof input === 'number' && Number.isInteger(input);
+}

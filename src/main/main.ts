@@ -66,22 +66,52 @@ class Main {
 
 
 const createWindow = () => {
-  // Menu.setApplicationMenu(null);
+  Menu.setApplicationMenu(null);
 
   const win = new BrowserWindow({
     width: 1000,
     height: 800,
     // fullscreen: true,
-    // frame: false,
+    frame: false,
     resizable: false,
     webPreferences: {
       preload: getPreloadPath()!,
       nodeIntegration: false,
       contextIsolation: true,
+      sandbox: true,
     },
   });
 
+  win.webContents.setWindowOpenHandler(() => {
+    return { action: 'deny' };
+  });
+
   const devServerUrl = process.env.VITE_DEV_SERVER_URL;
+  const allowedOrigin = devServerUrl ? new URL(devServerUrl).origin : null;
+
+  win.webContents.on('will-navigate', (event, url) => {
+    if (url.startsWith('file://')) {
+      return;
+    }
+
+    if (allowedOrigin) {
+      try {
+        if (new URL(url).origin === allowedOrigin) {
+          return;
+        }
+      } catch {
+        event.preventDefault();
+        return;
+      }
+    }
+
+    event.preventDefault();
+  });
+
+  win.webContents.on('will-attach-webview', (event) => {
+    event.preventDefault();
+  });
+
   if (devServerUrl) {
     win.loadURL(devServerUrl);
   } else {
@@ -93,12 +123,12 @@ const createWindow = () => {
 
 app.whenReady().then(() => {
 
-  init();
-  registerIpcHandlers();
+  initApp();
+  createWindow();
   app.on('activate', () => {
     if (!_isExistWindow()) {
       appMain.start();
-      createWindow();
+      
     }
   });
 });
@@ -132,9 +162,9 @@ function _isExistWindow(): boolean {
   return allWindows.length > 0;
 }
 
-async function init(): Promise<void> {
+async function initApp(): Promise<void> {
   const uuid = generateUuid();
-  console.log('Generated UUID:', uuid); 
+  console.log('Generated UUID:', uuid);
   lowDbWorker = getLowDbWorker();
   const dbPath = path.join(app.getPath('userData'), 'mydb');
   fs.mkdirSync(dbPath, { recursive: true });
@@ -147,8 +177,7 @@ async function init(): Promise<void> {
   } catch (error) {
     console.error('Failed to initialize LowDB worker:', error);
   }
-  createWindow();
-  icpMain();
+  registerIpcHandlers();
 }
 
 
@@ -164,7 +193,7 @@ function getPreloadPath(): string | null {
   return preloadPath || null;
 }
 
-// Entry point 
+// Entry point of the application
 // Create Main instance and start the application
 const appMain = new Main();
 appMain.start();

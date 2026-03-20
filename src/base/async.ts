@@ -2,7 +2,8 @@ export function timeout(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export function createCancelablePromise<T>(factory: (token: { isCancellationRequested: boolean, onCancellationRequested: (cb: () => void) => { dispose: () => void } }) => Promise<T>) {
+export function createCancelablePromise<T>(factory: 
+    (token: { isCancellationRequested: boolean, onCancellationRequested: (cb: () => void) => { dispose: () => void } }) => Promise<T>) {
     let cancelled = false;
     const listeners: (() => void)[] = [];
     const token = {
@@ -25,5 +26,28 @@ export function simpleCancelablePromise<T>(promise: Promise<T>): Promise<T> & { 
 
     wrappedPromise.cancel = cancel!;
     return wrappedPromise;
+}
+
+export async function sampleExampleUsage(): Promise<void> {
+    const job = createCancelablePromise<number>(async (token) => {
+        return new Promise<number>((resolve, reject) => {
+            const timer = setTimeout(() => resolve(42), 1000);
+            token.onCancellationRequested(() => {
+                clearTimeout(timer);
+                reject(new Error('Cancelled by token'));
+            });
+        });
+    });
+
+    setTimeout(() => {
+        job.cancel();
+    }, 200);
+
+    try {
+        const value = await job;
+        console.log('Promise resolved:', value);
+    } catch (error) {
+        console.log('Promise cancelled:', (error as Error).message);
+    }
 }
 

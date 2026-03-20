@@ -214,7 +214,7 @@ const GomokuGame = () => {
         return (
             <div
                 key={`${row}-${col}`}
-                className="relative flex items-center justify-center w-full h-full cursor-pointer"
+                className="relative flex items-center justify-center w-full h-full cursor-pointer no-drag"
                 onClick={() => handleSquareClick(row, col)}
             >
                 {/* 棋盘线 */}
@@ -300,9 +300,9 @@ const GomokuGame = () => {
             </div>
 
             {/* 棋盘区域 */}
-            <div className="p-1.5 bg-[#dcb35c] rounded-lg shadow-2xl border-[0.125rem] border-[#b58e3e]">
+            <div className="p-1.5 bg-[#dcb35c] rounded-lg shadow-2xl border-[0.125rem] border-[#b58e3e] no-drag">
                 <div
-                    className="grid bg-[#eecfa1] relative"
+                    className="grid bg-[#eecfa1] relative no-drag"
                     style={{
                         gridTemplateColumns: `repeat(${BOARD_SIZE}, minmax(0, 1fr))`,
                         width: 'min(60vmin, 24rem)',
