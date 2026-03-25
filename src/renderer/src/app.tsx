@@ -19,6 +19,7 @@ import GomokuGame from "./gomoku";
 import TodoList from "./todoList";
 import Pomodoro from "./pomodoro";
 import BasePage from "./basic-page";
+import Message from "./message";
 
 
 type AppId =
@@ -208,6 +209,7 @@ const App: React.FC = () => {
                                 header={<Button size="sm" variant="flat" className="app-nodrag">示例按钮</Button>}
                             >
                                 <div className="p-6 text-default-600">这里是基础页面内容区域。</div>
+                                <Message />
                             </BasePage>
                         </div>
                     </div>

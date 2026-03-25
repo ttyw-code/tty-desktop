@@ -1,3 +1,7 @@
 {
-  "python.defaultInterpreterPath": "E:\\Python\\Python310\\python.exe"
+  "python.defaultInterpreterPath": "E:\\Python\\Python310\\python.exe",
+  "cSpell.words": [
+    "gomoku",
+    "Pomodoro"
+  ]
 }

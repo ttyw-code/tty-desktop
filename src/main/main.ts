@@ -1,7 +1,6 @@
 import { app, BrowserWindow, screen, Menu, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
-import { icpMain } from '@/ipc-demo/demo.js';
 import { EventEmitter } from 'events';
 import dns from 'dns';
 import { getLowDbWorker, type LowDbWorkerClient } from './db-worker/lowdb-client';
@@ -11,6 +10,25 @@ import { generateUuid } from '@/base/uuid';
 
 
 let lowDbWorker: LowDbWorkerClient | null = null;
+
+const hasSingleInstanceLock = app.requestSingleInstanceLock();
+
+if (!hasSingleInstanceLock) {
+  app.quit();
+  process.exit(0);
+}
+
+app.on('second-instance', () => {
+  const allWindows = BrowserWindow.getAllWindows();
+  if (allWindows.length === 0) {
+    return;
+  }
+  const mainWindow = allWindows[0];
+  if (mainWindow.isMinimized()) {
+    mainWindow.restore();
+  }
+  mainWindow.focus();
+});
 
 dns.lookup('www.baidu.com', (err, address, family) => {
   if (err) {
@@ -45,7 +63,7 @@ setInterval(() => { myEmitter.increment(); }, 5000);
 
 
 console.log(myEmitter.getMaxListeners()); // 获取当前事件的最大监听器数量
-console.log(myEmitter.eventNames()); // 获取当前注册的事件名称列表
+console.log(myEmitter.eventNames()); // 获取当前注册的事件名称列�?
 
 class Main {
 
@@ -63,6 +81,7 @@ class Main {
     return;
   }
 }
+
 
 
 const createWindow = () => {
@@ -120,7 +139,6 @@ const createWindow = () => {
 };
 
 
-
 app.whenReady().then(() => {
 
   initApp();
@@ -133,10 +151,11 @@ app.whenReady().then(() => {
   });
 });
 
+
 function registerIpcHandlers(): void {
   // Add IPC handlers here
 
-  // 退出应用
+  // 退出应�?
   ipcMain.handle('app:quit', () => {
     app.quit();
   });
@@ -197,3 +216,6 @@ function getPreloadPath(): string | null {
 // Create Main instance and start the application
 const appMain = new Main();
 appMain.start();
+
+
+
