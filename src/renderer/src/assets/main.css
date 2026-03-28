@@ -4,16 +4,28 @@
 @source '../**/*.{js,ts,jsx,tsx}';
 @source '../../../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
 
-html, body, #root {
+html, body {
     height: 100%;
     width: 100%;
     overflow: hidden;
+    background: transparent;
+}
+
+#root {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 [data-overlay-container='true'] {
     padding: 10px;
     height: 100%;
     width: 100%;
+    -webkit-app-region: no-drag;
 }
 
 body {
@@ -22,12 +34,6 @@ body {
 
 * {
     box-sizing: border-box;
-}
-
-#root {
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .drag-region {
@@ -40,10 +46,16 @@ body {
 
 .drag-region button,
 .drag-region [role='button'],
+.drag-region [role='listbox'],
+.drag-region [role='option'],
+.drag-region [role='dialog'],
+.drag-region [data-slot='popover'],
+.drag-region [data-slot='content'],
 .drag-region a,
 .drag-region input,
 .drag-region textarea,
 .drag-region select,
-.drag-region .no-drag {
+.drag-region .no-drag,
+.drag-region .no-drag * {
     -webkit-app-region: no-drag;
 }

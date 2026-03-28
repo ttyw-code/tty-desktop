@@ -20,16 +20,23 @@ const Pomodoro: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [remaining, setRemaining] = useState(durations.focus * 60);
 
-  const modeConfig: Record<Mode, ModeConfig> = {
-    focus: { label: "专注", minutes: durations.focus, color: "primary" },
-    short: { label: "短休", minutes: durations.short, color: "success" },
-    long: { label: "长休", minutes: durations.long, color: "secondary" },
-  };
+  const modeConfig = useMemo<Record<Mode, ModeConfig>>(
+    () => ({
+      focus: { label: "专注", minutes: durations.focus, color: "primary" },
+      short: { label: "短休", minutes: durations.short, color: "success" },
+      long: { label: "长休", minutes: durations.long, color: "secondary" },
+    }),
+    [durations.focus, durations.short, durations.long],
+  );
+
+  const totalSeconds = useMemo(() => {
+    return modeConfig[mode].minutes * 60;
+  }, [mode, modeConfig]);
 
   useEffect(() => {
-    setRemaining(modeConfig[mode].minutes * 60);
+    setRemaining(totalSeconds);
     setIsRunning(false);
-  }, [mode, durations]);
+  }, [totalSeconds]);
 
   useEffect(() => {
     if (!isRunning) return;
@@ -49,9 +56,10 @@ const Pomodoro: React.FC = () => {
   }, [isRunning]);
 
   const progress = useMemo(() => {
-    const total = modeConfig[mode].minutes * 60;
-    return total === 0 ? 0 : Math.round(((total - remaining) / total) * 100);
-  }, [mode, remaining]);
+    return totalSeconds === 0
+      ? 0
+      : Math.round(((totalSeconds - remaining) / totalSeconds) * 100);
+  }, [totalSeconds, remaining]);
 
   const formatted = useMemo(() => {
     const minutes = Math.floor(remaining / 60)
@@ -166,7 +174,7 @@ const Pomodoro: React.FC = () => {
               variant="flat"
               startContent={<RotateCcw size={18} />}
               onPress={() => {
-                setRemaining(modeConfig[mode].minutes * 60);
+                setRemaining(totalSeconds);
                 setIsRunning(false);
               }}
             >

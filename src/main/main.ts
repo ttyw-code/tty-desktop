@@ -92,6 +92,7 @@ const createWindow = () => {
     height: 800,
     // fullscreen: true,
     frame: false,
+    transparent: true,
     resizable: false,
     webPreferences: {
       preload: getPreloadPath()!,

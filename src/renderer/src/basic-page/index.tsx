@@ -31,6 +31,7 @@ const BasePage = forwardRef<HTMLDivElement, Props>((props, ref) => {
                             variant="light"
                             color={onTop ? 'primary' : 'default'}
                             onPress={async () => {
+                                console.log('click pin')
                             }}
                         >
                             <Pin size={16} />

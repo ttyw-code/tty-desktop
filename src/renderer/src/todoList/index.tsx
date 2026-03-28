@@ -72,7 +72,7 @@ const TodoList: React.FC = () => {
                 </header>
 
                 {/* Form Container */}
-                <Card className="mb-8 border border-default-200 shadow-sm">
+                <Card className="mb-8 border border-default-200 shadow-sm no-drag">
                     <CardBody>
                         <form onSubmit={addTask} className="space-y-4">
                             <div className="flex flex-wrap gap-3">
@@ -101,7 +101,7 @@ const TodoList: React.FC = () => {
                                     size="sm"
                                 >
                                     {priorityOptions.map(option => (
-                                        <SelectItem key={option.key}>{option.label}</SelectItem>
+                                        <SelectItem className='no-drag' key={option.key}>{option.label}</SelectItem>
                                     ))}
                                 </Select>
                                 <Select
@@ -115,7 +115,7 @@ const TodoList: React.FC = () => {
                                     size="sm"
                                 >
                                     {categoryOptions.map(option => (
-                                        <SelectItem key={option.key}>{option.label}</SelectItem>
+                                        <SelectItem className='no-drag' key={option.key}>{option.label}</SelectItem>
                                     ))}
                                 </Select>
                             </div>
