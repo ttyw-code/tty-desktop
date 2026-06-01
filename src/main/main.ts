@@ -1,15 +1,13 @@
-import { app, BrowserWindow, screen, Menu, ipcMain } from 'electron';
+import { app, BrowserWindow, Menu, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
-import { EventEmitter } from 'events';
-import dns from 'dns';
-import { getLowDbWorker, type LowDbWorkerClient } from './db-worker/lowdb-client';
+import { getLowDbWorker, type LowDbWorkerClient } from '../common/database/lowdb-client';
 import { generateUuid } from '@/base/uuid';
-
-
-
+import { createTray } from './tray';
 
 let lowDbWorker: LowDbWorkerClient | null = null;
+let mainWindow: BrowserWindow | null = null;
+let trayInstance: Electron.Tray | null = null;
 
 const hasSingleInstanceLock = app.requestSingleInstanceLock();
 
@@ -29,41 +27,6 @@ app.on('second-instance', () => {
   }
   mainWindow.focus();
 });
-
-dns.lookup('www.baidu.com', (err, address, family) => {
-  if (err) {
-    console.error('DNS lookup failed:', err);
-  }
-  else {
-    console.log(`Address: ${address}, Family: IPv${family}`);
-  }
-});
-class MyEmitter extends EventEmitter {
-
-  constructor() {
-    super();
-  }
-
-  private _counter = 0;
-
-  increment() {
-    this._counter++;
-    this.emit('incremented', this._counter);
-  }
-
-  get counter() {
-    return this._counter;
-  }
-}
-
-
-const myEmitter = new MyEmitter();
-
-setInterval(() => { myEmitter.increment(); }, 5000);
-
-
-console.log(myEmitter.getMaxListeners()); // 获取当前事件的最大监听器数量
-console.log(myEmitter.eventNames()); // 获取当前注册的事件名称列�?
 
 class Main {
 
@@ -91,7 +54,7 @@ const createWindow = () => {
     width: 1000,
     height: 800,
     // fullscreen: true,
-    frame: false,
+    // frame: false,
     transparent: true,
     resizable: false,
     webPreferences: {
@@ -137,17 +100,28 @@ const createWindow = () => {
   } else {
     win.loadFile('out/renderer/index.html');
   }
+
+  mainWindow = win;
 };
 
+function showWindow() {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) {
+      mainWindow.restore();
+    }
+    mainWindow.show();
+    mainWindow.focus();
+  }
+}
 
-app.whenReady().then(() => {
-
-  initApp();
+app.whenReady().then(async () => {
+  await initApp();
   createWindow();
+  trayInstance = createTray(showWindow);
+
   app.on('activate', () => {
     if (!_isExistWindow()) {
       appMain.start();
-      
     }
   });
 });
@@ -156,7 +130,7 @@ app.whenReady().then(() => {
 function registerIpcHandlers(): void {
   // Add IPC handlers here
 
-  // 退出应�?
+  // 退出应用
   ipcMain.handle('app:quit', () => {
     app.quit();
   });
@@ -171,7 +145,7 @@ function registerIpcHandlers(): void {
   ipcMain.handle('app:window:close', () => {
     const focused = BrowserWindow.getFocusedWindow();
     if (focused) {
-      focused.close();
+      focused.hide();
     }
   });
 }

@@ -15,7 +15,7 @@ export default defineConfig({
       host: 'localhost',
     },
     watch: {
-        usePolling: true,
+      usePolling: true,
     }
   },
   resolve: {
@@ -26,5 +26,11 @@ export default defineConfig({
   build: {
     outDir: path.resolve(__dirname, 'out/renderer'),
     emptyOutDir: true,
+    rollupOptions: {
+      input: path.resolve(__dirname, 'src/renderer/index.html'),
+      output: {
+        entryFileNames: 'assets/[name].js',
+      }
+    }
   },
 });

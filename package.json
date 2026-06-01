@@ -1,5 +1,5 @@
 {
-  "name": "tty-gomoku",
+  "name": "tty-kumo",
   "version": "1.0.0",
   "description": "",
   "main": "./out/src/main/main.cjs",
@@ -7,15 +7,15 @@
   "scripts": {
     "build:main": "vite build --config vite.main.config.ts",
     "build:renderer": "vite build",
-    "build": "npm run build:main && npm run build:renderer",
-    "start": "npm run build && electron .",
+    "build": "yarn build:main && yarn build:renderer",
+    "start": "yarn build && electron .",
     "dev:main": "vite build --config vite.main.config.ts --watch",
     "dev:renderer": "vite",
     "dev:electron": "wait-on file:out/src/main/main.cjs file:out/src/main/preload.cjs tcp:127.0.0.1:5175 && nodemon --watch out/src/main --ext cjs --exec \"cross-env NODE_NO_WARNINGS=1 VITE_DEV_SERVER_URL=http://localhost:5175 electron .\"",
-    "dev": "concurrently -k \"cross-env NODE_NO_WARNINGS=1 npm run dev:main\" \"cross-env NODE_NO_WARNINGS=1 npm run dev:renderer -- --logLevel error\" \"npm run dev:electron\"",
-    "pack:win": "npm run build && electron-builder --win",
-    "pack:nsis": "npm run build && electron-builder --win nsis",
-    "pack:msi": "npm run build && electron-builder --win msi",
+    "dev": "concurrently -k \"cross-env NODE_NO_WARNINGS=1 yarn dev:main\" \"cross-env NODE_NO_WARNINGS=1 yarn dev:renderer -- --logLevel error\" \"yarn dev:electron\"",
+    "pack:win": "yarn build && electron-builder --win",
+    "pack:nsis": "yarn build && electron-builder --win nsis",
+    "pack:msi": "yarn build && electron-builder --win msi",
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf ./out"
   },
@@ -58,8 +58,8 @@
     ]
   },
   "build": {
-    "appId": "com.tty.gomoku",
-    "productName": "TTY Gomoku",
+    "appId": "com.tty.kumo",
+    "productName": "tty-kumo",
     "asar": true,
     "directories": {
       "output": "dist",
@@ -73,17 +73,17 @@
       "main": "out/src/main/main.cjs"
     },
     "win": {
-      "icon": "build/icons/ttygomoku.ico",
+      "icon": "build/icons/brain.ico",
       "target": [
         "nsis",
         "msi"
       ]
     },
     "mac": {
-      "icon": "build/icons/ttygomoku.icns"
+      "icon": "build/icons/brain.icns"
     },
     "linux": {
-      "icon": "build/icons/ttygomoku.png"
+      "icon": "build/icons/brain.png"
     },
     "nsis": {
       "oneClick": false,
@@ -92,10 +92,9 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "TTY Gomoku",
-      "installerIcon": "build/icons/ttygomoku-installer.ico",
-      "uninstallerIcon": "build/icons/ttygomoku-installer.ico",
-      "uninstallDisplayName": "TTY Gomoku"
+      "installIcon": "build/icons/brain.ico",
+      "shortcutName": "tty-kumo",
+      "uninstallDisplayName": "tty-kumo"
     },
     "msi": {
       "perMachine": false
